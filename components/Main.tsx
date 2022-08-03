@@ -51,7 +51,7 @@ const Main = () => {
       LAMPORTS_PER_SOL,
     );
 
-    const signature = await con.confirmTransaction(airdropSignature);
+    await con.confirmTransaction(airdropSignature);
 
     await balanc();
   };
@@ -76,11 +76,17 @@ const Main = () => {
           <Text style={styles.header}>Your account balance:</Text>
           <Text>{balance} SOL</Text>
         </View>
-        <View>
+        <View style={styles.buttons}>
           <Button
             disabled={publicKey ? false : true}
             onPress={airdrop}
             title="AIRDROP"
+            color="#841584"
+          />
+          <Button
+            disabled={publicKey ? false : true}
+            onPress={balanc}
+            title="REFRESH"
             color="#841584"
           />
         </View>
@@ -121,5 +127,11 @@ const styles = StyleSheet.create({
   },
   balanceSection: {},
   QR: {},
+  buttons: {
+    flexDirection: 'row-reverse',
+    width: '100%',
+    justifyContent: 'center',
+    alignContent: 'center',
+  },
 });
 export default Main;

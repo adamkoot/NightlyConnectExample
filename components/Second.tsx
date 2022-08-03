@@ -1,47 +1,30 @@
 import React from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  View,
-  Alert,
-  Button,
-  TouchableOpacity,
-} from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import {RNCamera} from 'react-native-camera';
 import {ClientSolana, SignTransactionsRequest} from '@nightlylabs/connect';
 import {useNavigation} from '@react-navigation/native';
 import {RootScreenProp} from './RootStackPrams';
-import {PublicKey} from '@solana/web3.js';
+import {Keypair, PublicKey} from '@solana/web3.js';
 import {Transaction} from '@solana/web3.js';
+import {Buffer} from 'buffer';
+global.Buffer = global.Buffer || require('buffer').Buffer;
 
-const createThreeButtonAlert = () =>
-  Alert.alert('Alert Title', 'My Alert Msg', [
-    {
-      text: 'Ask me later',
-      onPress: () => console.log('Ask me later pressed'),
-    },
-    {
-      text: 'Cancel',
-      onPress: () => console.log('Cancel Pressed'),
-      style: 'cancel',
-    },
-    {text: 'OK', onPress: () => console.log('OK Pressed')},
-  ]);
 export interface IPropsSolana {
   route: {
     params: {
       publicKey: PublicKey;
+      keypair: Keypair;
     };
   };
 }
 const Second: React.FC<IPropsSolana> = ({route}) => {
   const publicKey = route.params.publicKey;
-  //const keypair = route.params.keypair;
+  const keypair = route.params.keypair;
   const rootNavigation = useNavigation<RootScreenProp>();
+
   const onSuccess = async (e: {data: string}) => {
-    console.log(e);
+    console.log(e.data);
     const url = new URL(e.data);
     const network = url.searchParams.get('network');
 
@@ -54,6 +37,8 @@ const Second: React.FC<IPropsSolana> = ({route}) => {
           let {client, data} = await ClientSolana.build({
             sessionId: sessionId,
           });
+
+          console.log(data);
 
           await client.connect({
             publicKey: publicKey, // PublicKey: required
@@ -68,7 +53,8 @@ const Second: React.FC<IPropsSolana> = ({route}) => {
             const txToSign = Transaction.from(
               Buffer.from(signRequest.transactions[0], 'hex'),
             );
-            //txToSign.sign(alice_keypair);
+
+            txToSign.sign(keypair);
 
             // Send signed transaction
             await client.resolveSignTransaction({
@@ -85,6 +71,7 @@ const Second: React.FC<IPropsSolana> = ({route}) => {
     <View style={{flex: 2}}>
       <QRCodeScanner
         onRead={onSuccess}
+        showMarker={true}
         flashMode={RNCamera.Constants.FlashMode.off}
         bottomContent={
           <TouchableOpacity onPress={() => rootNavigation.navigate('MAIN')}>
