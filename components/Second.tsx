@@ -70,7 +70,7 @@ const Second: React.FC<IPropsSolana> = ({route}) => {
   return (
     <View style={{flex: 2}}>
       <QRCodeScanner
-        onRead={onSuccess}
+        onRead={onSuccess.bind(this)}
         showMarker={true}
         flashMode={RNCamera.Constants.FlashMode.off}
         bottomContent={
