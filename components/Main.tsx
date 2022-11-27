@@ -48,7 +48,7 @@ const Main = () => {
 
     const airdropSignature = await con.requestAirdrop(
       base58publicKey,
-      LAMPORTS_PER_SOL,
+      1 * LAMPORTS_PER_SOL,
     );
 
     await con.confirmTransaction(airdropSignature);

@@ -3,5 +3,6 @@ module.exports = {
   plugins: [
     
     'react-native-reanimated/plugin',//Add this
+    "@babel/plugin-syntax-bigint"
 ],
 };

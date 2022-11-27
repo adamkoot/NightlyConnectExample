@@ -1,8 +1,11 @@
 import React from 'react';
-import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity, Platform} from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import {RNCamera} from 'react-native-camera';
-import {ClientSolana, SignTransactionsRequest} from '@nightlylabs/connect';
+import {
+  ClientSolana,
+  SignTransactionsRequest,
+} from '@nightlylabs/connect-solana';
 import {useNavigation} from '@react-navigation/native';
 import {RootScreenProp} from './RootStackPrams';
 import {Keypair, PublicKey} from '@solana/web3.js';
@@ -41,27 +44,29 @@ const Second: React.FC<IPropsSolana> = ({route}) => {
           console.log(data);
 
           await client.connect({
-            publicKey: publicKey, // PublicKey: required
+            publicKey: new PublicKey(publicKey), // PublicKey: required
             sessionId: sessionId, // string: required
-            //token: token // string: optional for push notification purposes only
+            token: 'e', // string: optional for push notification purposes only
+            notificationEndpoint:
+              'https://us-central1-nightly-connect.cloudfunctions.net/default-triggerNotification',
           });
 
-          client.on('newRequest', async request => {
-            const signRequest = request as SignTransactionsRequest;
+          // client.on('newRequest', async request => {
+          //   const signRequest = request as SignTransactionsRequest;
 
-            // Sign request
-            const txToSign = Transaction.from(
-              Buffer.from(signRequest.transactions[0], 'hex'),
-            );
+          //   // Sign request
+          //   const txToSign = Transaction.from(
+          //     Buffer.from(signRequest.transactions[0], 'hex'),
+          //   );
 
-            txToSign.sign(keypair);
+          //   let a = txToSign.sign(keypair);
 
-            // Send signed transaction
-            await client.resolveSignTransaction({
-              requestId: signRequest.id,
-              signedTransactions: [txToSign],
-            });
-          });
+          //   // Send signed transaction
+          //   await client.resolveSignTransaction({
+          //     requestId: signRequest.id,
+          //     signedTransactions: [txToSign],
+          //   });
+          // });
         } catch (error) {
           console.log(error);
         }
